@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Redaction Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Redaction Summary</h1>
+        <div class="summary-stats">
+            <h2>Total Redactions: {{ summary.total_redactions }}</h2>
+            <canvas id="redactionChart"></canvas>
+        </div>
+        <div class="actions">
+            <a href="{{ url_for('index') }}" class="button">Redact Another Document</a>
+            <form action="{{ url_for('reverse_redaction') }}" method="post">
+                <input type="submit" value="Reverse Redaction" class="button">
+            </form>
+        </div>
+    </div>
+    <script>
+        // Ensure the summary data is correctly converted to a JSON-friendly format
+        var ctx = document.getElementById('redactionChart').getContext('2d');
+        var chartData = {
+            labels: {{ summary.redaction_types.keys() | tojson }},
+            datasets: [{
+                data: {{ summary.redaction_types.values() | tojson }},
+                backgroundColor: [
+                    '#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#4bc0c0'
+                ]
+            }]
+        };
+
+        // Only render the chart if there is data
+        if (chartData.labels.length > 0) {
+            var chart = new Chart(ctx, {
+                type: 'pie',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Redaction Types'
+                        }
+                    }
+                }
+            });
+        } else {
+            // Handle the case where there is no data
+            ctx.font = "16px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("No redaction data available", ctx.canvas.width / 2, ctx.canvas.height / 2);
+        }
+    </script>
+</body>
+</html>

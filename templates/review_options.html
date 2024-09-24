@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Redaction Options</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .custom-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Review Redaction Options</h1>
+        <form method="post" id="redactionForm">
+            {% for group_type, items in suggested_redactions.items() %}
+            <div class="redaction-group">
+                <h3>{{ group_type }}</h3>
+                <select name="group_{{ group_type }}" onchange="applyToGroup(this, '{{ group_type }}')">
+                    <option value="">Select for all {{ group_type }}</option>
+                    <option value="IGNORE">Ignore</option>
+                    <option value="REDACT">Redact</option>
+                    <option value="MASK">Mask</option>
+                    <option value="CUSTOM">Custom</option>
+                </select>
+                <input type="text" name="custom_{{ group_type }}" class="custom-input" placeholder="Enter custom replacement for all {{ group_type }}">
+                
+                {% for item in items %}
+                    <div class="redaction-item">
+                        <p><strong>Original:</strong> {{ item.original }}</p>
+                        <p class="context"><strong>Context:</strong> ...{{ item.context }}...</p>
+                        <select name="redact_{{ item.original }}" onchange="toggleCustomInput(this)">
+                            <option value="IGNORE">Ignore</option>
+                            <option value="REDACT">Redact</option>
+                            <option value="MASK">Mask</option>
+                            <option value="CUSTOM">Custom</option>
+                        </select>
+                        <input type="text" name="custom_{{ item.original }}" class="custom-input" placeholder="Enter custom replacement">
+                    </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            <input type="submit" value="Proceed to Preview">
+            <button type="button" id="previewButton">Preview Redactions</button>
+        </form>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="previewContent"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Redactions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Review Suggested Redactions</h1>
+        <form id="redactionForm" method="post">
+            {% for original, suggested in suggested_redactions.items() %}
+                <div class="redaction-item">
+                    <input type="checkbox" id="redact_{{ original }}" name="redact_{{ original }}" value="{{ suggested }}" checked>
+                    <label for="redact_{{ original }}">Redact "{{ original }}" as:</label>
+                    <input type="text" name="replacement_{{ original }}" value="{{ suggested }}" placeholder="Custom replacement">
+                </div>
+            {% endfor %}
+            <div class="form-group">
+                <label for="additional_redactions">Additional Redactions:</label>
+                <textarea id="additional_redactions" name="additional_redactions" rows="4" placeholder="Enter additional terms to redact, one per line"></textarea>
+            </div>
+            <input type="submit" value="Apply Redactions">
+        </form>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

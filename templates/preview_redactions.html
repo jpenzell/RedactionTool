@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview Redactions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .redacted {
+            background-color: #ff6b6b;
+            color: #fff;
+            padding: 2px 4px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .masked {
+            background-color: #feca57;
+            color: #000;
+            padding: 2px 4px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .custom {
+            background-color: #54a0ff;
+            color: #fff;
+            padding: 2px 4px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        #additional-terms {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f1f2f6;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Preview Redactions</h1>
+        <div class="preview">
+            {% for line in preview.split('\n') %}
+                <p>
+                    {% for word in line.split() %}
+                        {% if word in approved_redactions %}
+                            {% if approved_redactions[word]['action'] == 'MASKED' %}
+                                <span class="masked redacted-term" data-original="{{ word }}">{{ approved_redactions[word]['token'] }}</span>
+                            {% elif approved_redactions[word]['action'] == 'REDACTED' %}
+                                <span class="redacted redacted-term" data-original="{{ word }}">{{ approved_redactions[word]['token'] }}</span>
+                            {% elif approved_redactions[word]['action'] == 'CUSTOM' %}
+                                <span class="custom redacted-term" data-original="{{ word }}">{{ approved_redactions[word]['token'] }}</span>
+                            {% endif %}
+                        {% else %}
+                            {{ word }}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+            {% endfor %}
+        </div>
+        
+        <div id="additional-terms">
+            <h2>Add Additional Redaction Terms</h2>
+            <form method="post">
+                <div id="term-inputs">
+                    <div class="term-input">
+                        <input type="text" name="term[]" placeholder="Term to redact">
+                        <select name="redaction_type[]">
+                            <option value="REDACTED">Redacted</option>
+                            <option value="MASKED">Masked</option>
+                            <option value="CUSTOM">Custom</option>
+                        </select>
+                        <input type="text" name="custom_replacement[]" placeholder="Custom replacement" style="display:none;">
+                    </div>
+                </div>
+                <button type="button" onclick="addTermInput()">Add Another Term</button>
+                <input type="submit" value="Update Preview">
+            </form>
+        </div>
+
+        <form action="{{ url_for('finalize_redactions') }}" method="post">
+            <input type="submit" value="Finalize Redactions">
+        </form>
+        <form action="{{ url_for('reverse_redaction') }}" method="post">
+            <input type="submit" value="Reverse Redaction">
+        </form>
+    </div>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
