@@ -34,3 +34,26 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Virtual environment
+venv/
+*.pyc
+__pycache__/
+
+# Large model files
+*.dylib
+*.so
+*.dll
+
+# Specific large files
+en_core_web_trf/
+torch/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
